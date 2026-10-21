@@ -422,3 +422,8 @@ html,body{overflow-anchor:none}
 .vdcard{margin:0;padding:.8rem}.vdbox{position:relative;width:100%;aspect-ratio:16/9;background:#1d2a27;border-radius:12px;overflow:hidden}
 .vdbox video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;background:#1d2a27}
 .vdcard figcaption{font-size:1.25rem;padding:.7rem .3rem .2rem}
+
+/* fixed overlay at bottom: does not shift page layout */
+.consent{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:50;max-width:720px;margin:0 auto;background:#fff;border:2px solid #1F6B5C;border-radius:16px;padding:1rem 1.2rem;box-shadow:0 8px 30px rgba(0,0,0,.18);font-size:1.15rem}
+.consent p{margin:0 0 .8rem}.consent-btns{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}
+.consent .btn{font-size:1.15rem;min-height:52px;padding:0 1.4rem}
