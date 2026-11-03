@@ -12,7 +12,7 @@ function grant(){gtag("consent","update",{analytics_storage:"granted"});load();}
 var c=localStorage.getItem(K);
 if(c==="yes"){grant();return}if(c==="no")return;
 var b=document.createElement("div");b.className="consent";b.setAttribute("role","dialog");b.setAttribute("aria-label",T.t);
-b.innerHTML='<p><b>'+T.t+'</b><br>'+T.d+' <a href="privacidad.html">'+T.p+'</a></p><div class="consent-btns"><button class="btn" data-c="yes">'+T.y+'</button><button class="btn-link" data-c="no">'+T.n+'</button></div>';
+b.innerHTML='<p><b>'+T.t+'</b><span class="cd"><br>'+T.d+'</span> <a href="privacidad.html">'+T.p+'</a></p><div class="consent-btns"><button class="btn" data-c="yes">'+T.y+'</button><button class="btn-link" data-c="no">'+T.n+'</button></div>';
 b.onclick=function(e){var v=e.target.getAttribute("data-c");if(!v)return;localStorage.setItem(K,v);b.remove();if(v==="yes")grant();};
 document.body.appendChild(b);
 })();

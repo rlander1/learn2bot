@@ -74,7 +74,7 @@ function renderLesson(){const id=document.body.dataset.page;MI=MODS.findIndex(x=
 if(!unlocked(MI)){$("main").innerHTML=`<a class="crumb" href="index.html">${ic("arrowL")} ${u("home")}</a><div class="card success"><div class="big">${ic("lock")}</div><h1>${u("lockedTitle")}</h1><p class="lead" style="margin:auto">${u("lockedLead")}</p><div class="row" style="justify-content:center"><a class="btn btn-pri" href="${MODS[MI-1].id}.html">${u("goPrev")} ${MI}</a></div></div>`;return}
 $("main").innerHTML=`<a class="crumb" href="index.html">${ic("arrowL")} ${u("home")}</a>
 <p class="eyebrow">${u("modWord")} ${MI+1} · ${esc(tr(mod.t))}</p>
-<ol class="stages" id="stages" aria-label="${u("stagesLbl")}"></ol>
+
 <div class="prog" id="prog"><div class="prog-t" id="progT"></div><div class="prog-bar"><i id="progBar"></i></div></div>
 <div id="stage"></div>`;
 if(location.hash=="#real"&&L.i<0)L.i=LS.steps.length;go(L.i)}
@@ -101,12 +101,29 @@ function go(i){L.run++;L.i=i;const st=$("stage"),n=LS.steps.length;
   bindSim();bindHelp(tr(s.s));if(typing)$("fill").onclick=fillEx;arrive()}
  else if(i==n){L.phase="real";renderReal()}
  setProgLine()}
-function simHTML(){return `<div class="dash" id="dash"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>${u("simTitle")}</span><em>${u("simBadge")}</em></div>
-<div class="dash-body"><nav class="side" aria-label="${u("myBots")}"><p class="side-l">${u("myBots")}</p><div id="botList"></div><button id="newBot" aria-label="${u("newBotLbl")}">${u("newBot")}</button><div class="plusmenu hidden" id="plusMenu"><button id="mkBot">${ic("bot")} ${u("mkBot")}</button></div></nav>
+function simHTML(){return `<div class="simwrap"><aside class="ctx" id="ctx" aria-live="polite"></aside><div class="dash" id="dash"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>${u("simTitle")}</span><em>${u("simBadge")}</em></div>
+<div class="dash-body"><nav class="side" aria-label="${u("myBots")}"><div class="side-top"><span class="sicon" aria-hidden="true">${SRCH}</span><button id="newBot" class="sicon" aria-label="${u("newBotLbl")}">${PLUS}</button></div><p class="side-l">${u("myBots")}</p><div id="botList"></div></nav>
 <section class="pane"><div class="pane-top" id="paneTitle"></div><div class="empty" id="emptyS">${u("pick")}</div>
 <div class="form hidden" id="form"><label for="bname">${u("fName")}</label><input id="bname" autocomplete="off"><label for="bdesc">${u("fDesc")}</label><input id="bdesc" autocomplete="off"><button id="create">${u("create")}</button></div>
-<div class="chat hidden" id="chat"><div class="msgs" id="msgs" aria-live="polite"></div><div class="compose"><textarea id="msg" aria-label="${u("msgLbl")}" placeholder="${u("msgLbl")}"></textarea><button id="send" aria-label="${u("send")}">${ic("send")}</button></div></div></section></div>
-<svg id="cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l7 19 2.6-7.6L21 11z" fill="#2A2622" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div>`}
+<div class="chat hidden" id="chat"><div class="msgs" id="msgs" aria-live="polite"></div><div class="compose"><textarea id="msg" aria-label="${u("msgLbl")}" placeholder="${u("msgLbl")}"></textarea><button id="send" aria-label="${u("send")}">${ic("send")}</button></div></div></section><aside class="binfo hidden" id="binfo" aria-hidden="true"><div id="biAv"></div><b id="biName"></b><div class="bitabs"><span>${u("biDet")}</span><span>${u("biLib")}</span><span class="on">${u("biComp")}</span></div></aside></div>${modalHTML()}
+<svg id="cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2l7 19 2.6-7.6L21 11z" fill="#2A2622" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div></div>`}
+const SRCH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>',PLUS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+/* Create New Bot modal: name, face shape, color (as in the real app) */
+const COLS=["#1B1B1F","#9A5B22","#E5322D","#F26B1D","#F5A00F","#22B866","#14B3A0","#1F7AE8","#8A55E8","#EC2D8C","#8E8E93"];
+const pts=(k,r,rot,inner)=>{const a=[];const n=inner?k*2:k;for(let j=0;j<n;j++){const ang=rot+j*Math.PI*2/n,rr=inner&&j%2?r*inner:r;a.push((20+rr*Math.sin(ang)).toFixed(1)+","+(21-rr*Math.cos(ang)).toFixed(1))}return a.join(" ")};
+const pg=(c,q)=>`<polygon points="${q}" fill="${c}" stroke="${c}" stroke-width="6" stroke-linejoin="round"/>`;
+const SHAPES=[c=>`<circle cx="20" cy="21" r="16" fill="${c}"/>`,c=>`<path d="${BLOB}" fill="${c}"/>`,c=>pg(c,pts(4,15,.25)),c=>pg(c,pts(4,17,0,.55)),c=>`<g fill="${c}"><circle cx="13" cy="15" r="8"/><circle cx="27" cy="15" r="8"/><circle cx="13" cy="27" r="8"/><circle cx="27" cy="27" r="8"/><circle cx="20" cy="21" r="9"/></g>`,
+ c=>`<ellipse cx="20" cy="22" rx="17" ry="13" fill="${c}"/>`,c=>pg(c,pts(8,16,0,.8)),c=>pg(c,pts(6,15,0)),c=>`<rect x="4" y="9" width="32" height="24" rx="11" fill="${c}"/>`,c=>pg(c,pts(3,15,Math.PI/2)),
+ c=>pg(c,pts(5,15,0)),c=>pg(c,pts(6,17,0,.62)),c=>pg(c,pts(8,15,Math.PI/8)),c=>pg(c,pts(4,15,0)),c=>`<rect x="5" y="6" width="30" height="30" rx="13" fill="${c}"/>`];
+const BOTSHAPE={};const M={face:1,col:"#EC2D8C"};
+const shapeSVG=(f,c,cls="")=>`<svg class="av blob ${cls}" viewBox="0 0 40 40" aria-hidden="true">${SHAPES[f](c)}<ellipse cx="15.5" cy="20" rx="2.4" ry="3.8" fill="#fff"/><ellipse cx="24.5" cy="20" rx="2.4" ry="3.8" fill="#fff"/></svg>`;
+function modalHTML(){return `<div class="cmodal hidden" id="cmodal" role="dialog" aria-modal="true" aria-labelledby="cmT"><div class="cm-box"><div class="cm-h"><b id="cmT">${u("cmTitle")}</b><button id="mclose" class="cm-x" aria-label="${u("cmCancel")}">×</button></div>
+<div class="cm-prev" id="mprev"></div><input id="mname" autocomplete="off" placeholder="${u("cmName")}" aria-label="${u("cmName")}">
+<div class="cm-faces" role="group" aria-label="${u("cmFace")}">${SHAPES.map((_,j)=>`<button class="cm-face" data-f="${j}" aria-label="${u("cmFace")} ${j+1}"></button>`).join("")}</div>
+<div class="cm-cols" role="group" aria-label="${u("cmCol")}">${COLS.map((c,j)=>`<button class="cm-col" data-c="${c}" style="background:${c}" aria-label="${u("cmCol")} ${j+1}"></button>`).join("")}</div>
+<div class="cm-f"><button id="mcancel" class="cm-cancel">${u("cmCancel")}</button><button id="mcreate" class="cm-create">${u("cmCreate")}</button></div></div></div>`}
+function paintModal(){$("mprev").innerHTML=shapeSVG(M.face,M.col,"lg");document.querySelectorAll(".cm-face").forEach(b=>{b.innerHTML=shapeSVG(+b.dataset.f,M.col);b.classList.toggle("sel",+b.dataset.f==M.face);b.setAttribute("aria-pressed",+b.dataset.f==M.face)});
+ document.querySelectorAll(".cm-col").forEach(b=>{b.classList.toggle("sel",b.dataset.c==M.col);b.setAttribute("aria-pressed",b.dataset.c==M.col)});const ok=!!$("mname").value.trim();$("mcreate").classList.toggle("ready",ok);$("mcreate").disabled=!ok;$("mcreate").setAttribute("aria-disabled",String(!ok))}
 const BOTCOL={"":"#17594B","Asistente":"#6B7079","Resumen claro":"#1F6FD6","Cita":"#7A4FE0","Familia":"#D02C78","Mi ayudante":"#9A5B22"};
 Object.keys(BN_EN).forEach(k=>BOTCOL[BN_EN[k]]=BOTCOL[k]);
 const botCol=n=>BOTCOL[n]||"#B05E00";
@@ -117,19 +134,19 @@ happy:'<path d="M12.4 18q2.6-3.4 5.2 0M22.4 18q2.6-3.4 5.2 0" stroke="#fff" stro
 wow:c=>`<ellipse cx="15" cy="16.5" rx="3.2" ry="4.6" fill="#fff"/><ellipse cx="25" cy="16.5" rx="3.2" ry="4.6" fill="#fff"/><circle cx="15.8" cy="15" r="1.1" fill="${c}"/><circle cx="25.8" cy="15" r="1.1" fill="${c}"/><ellipse cx="20" cy="26" rx="2" ry="2.4" fill="#fff" opacity=".9"/>`,
 think:'<ellipse class="blink" cx="15" cy="16" rx="2.6" ry="3.6" fill="#fff"/><ellipse class="blink" cx="25" cy="16" rx="2.6" ry="3.6" fill="#fff"/><path d="M17 26h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
 wink:'<ellipse class="blink" cx="15" cy="17" rx="2.6" ry="4" fill="#fff"/><path d="M22.4 17.6q2.6-2.6 5.2 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>'};
-const avSVG=(n,cls="",ex="att")=>{const c=botCol(n),f=FACE[ex];return `<svg class="av blob ${cls}" viewBox="0 0 40 40" aria-hidden="true"><path d="${BLOB}" fill="${c}"/><path d="${BLOB}" fill="url(#shine)"/><ellipse cx="20" cy="38.6" rx="11" ry="1.6" fill="#000" opacity=".10"/>${typeof f=="function"?f(c):f}</svg>`};
+const avSVG=(n,cls="",ex="att")=>{const c=botCol(n),f=FACE[ex];if(BOTSHAPE[n]!=null)return shapeSVG(BOTSHAPE[n],c,cls);return `<svg class="av blob ${cls}" viewBox="0 0 40 40" aria-hidden="true"><path d="${BLOB}" fill="${c}"/><path d="${BLOB}" fill="url(#shine)"/><ellipse cx="20" cy="38.6" rx="11" ry="1.6" fill="#000" opacity=".10"/>${typeof f=="function"?f(c):f}</svg>`};
 const PREV={"Asistente":T2("¿En qué te ayudo hoy?","How can I help today?"),"Resumen claro":T2("Listo para resumir noticias.","Ready to summarize news."),"Cita":T2("Te ayudo con tus citas.","I help with your appointments.")};Object.keys(BN_EN).forEach(k=>PREV[k]&&(PREV[BN_EN[k]]=PREV[k]));
 function botBtn(b,i,active){b={n:bn(b.n)};const d=document.createElement("button");d.className="botbtn"+(active?" active":"");d.id="bot-"+i;d.innerHTML=`${avSVG(b.n)}<span class="bt"><b></b><small></small></span>`;d.querySelector("b").textContent=b.n;d.querySelector("small").textContent=PREV[b.n]?tr(PREV[b.n]):u("newTitle");return d}
 const curBot=()=>{const b=document.querySelector(".botbtn.active");return b?b.querySelector("b").textContent:""};
 function setPreview(t){const b=document.querySelector(".botbtn.active small");if(b)b.textContent=t.replace(/\s+/g," ")}
 function resetDash(){const bl=$("botList");bl.innerHTML="";LS.bots.forEach((b,i)=>bl.appendChild(botBtn(b,i)));bindBots();
-["form","chat","plusMenu"].forEach(x=>$(x).classList.add("hidden"));$("emptyS").classList.remove("hidden");$("msgs").innerHTML="";$("bname").value=$("bdesc").value=$("msg").value="";$("paneTitle").textContent="";clearHi();$("cursor").style.display="none";tapBanner(null)}
+["form","chat","cmodal","binfo"].forEach(x=>$(x).classList.add("hidden"));$("msg").placeholder=u("msgLbl");$("emptyS").classList.remove("hidden");$("msgs").innerHTML="";$("bname").value=$("bdesc").value=$("msg").value="";$("paneTitle").textContent="";clearHi();$("cursor").style.display="none";tapBanner(null)}
 const clearHi=()=>document.querySelectorAll(".hi").forEach(e=>e.classList.remove("hi"));
-function showChat(title){$("form").classList.add("hidden");$("emptyS").classList.add("hidden");$("chat").classList.remove("hidden");$("paneTitle").innerHTML=avSVG(title==u("newTitle")?"":title,"sm")+"<span></span>";$("paneTitle").lastChild.textContent=title}
-const FX={openMenu(){$("plusMenu").classList.remove("hidden")},
-startSetup(){$("mkBot").classList.add("chosen");document.querySelectorAll(".botbtn").forEach(b=>b.classList.remove("active"));showChat(u("newTitle"));addMsg(u("setupQ"),"bot");addCard({i:"bot",h:T2("Elige una opción","Choose one"),l:T2([],[]),b:CHIPS})},
-nameBot(st){const n=($("msg").value.trim()||tr(st.f[0].v)).replace(/\s+/g," ").slice(0,24);addMsg(n,"me");$("msg").value="";document.querySelectorAll(".botbtn").forEach(b=>b.classList.remove("active"));$("botList").appendChild(botBtn({n},"new",true));bindBots();showChat(n);
- const d=document.createElement("div");d.className="msg bot bcard avcard";d.innerHTML=avSVG(n,"lg react","happy")+"<span></span>";d.lastChild.textContent=u("avReady");botRow(d);addMsg(tr(st.reply).replace("{n}",n),"bot")},
+function showChat(title){$("binfo").classList.remove("hidden");$("biAv").innerHTML=avSVG(title==u("newTitle")?"":title,"lg");$("biName").textContent=title;$("form").classList.add("hidden");$("emptyS").classList.add("hidden");$("chat").classList.remove("hidden");$("paneTitle").innerHTML=avSVG(title==u("newTitle")?"":title,"sm")+"<span></span>";$("paneTitle").lastChild.textContent=title}
+const FX={openModal(){M.face=1;M.col="#EC2D8C";$("mname").value="";$("cmodal").classList.remove("hidden");paintModal()},
+modalCreate(st){const n=($("mname").value.trim()||tr(st.f[0].v)).replace(/\s+/g," ").slice(0,24);BOTCOL[n]=M.col;BOTSHAPE[n]=M.face;$("cmodal").classList.add("hidden");
+ document.querySelectorAll(".botbtn").forEach(b=>b.classList.remove("active"));const bl=$("botList");bl.insertBefore(botBtn({n},"new",true),bl.firstChild);bindBots();showChat(n);
+ addMsg(u("cmHi").replace("{n}",n),"bot");addCard({i:"bot",h:T2("¿En qué quieres que me enfoque primero?","What would you like me to focus on first?"),l:T2([],[]),b:CHIPS,abc:1});$("msg").placeholder=u("phAnswer")},
 openForm(){$("chat").classList.add("hidden");$("emptyS").classList.add("hidden");$("form").classList.remove("hidden");$("paneTitle").textContent=u("newTitle")},
 createBot(){const n=$("bname").value.trim()||"Resumen claro";document.querySelectorAll(".botbtn").forEach(b=>b.classList.remove("active"));$("botList").appendChild(botBtn({n,c:"g"},"new",true));bindBots();showChat(n)},
 say(st){const t=$(st.t),row=t.parentNode;const ok=document.createElement("p");ok.className="bc-done";ok.innerHTML=`${ic("check")}<span></span>`;ok.lastChild.textContent=tr(st.done);row.replaceWith(ok);addMsg(tr(st.say),"bot")},
@@ -139,28 +156,33 @@ function botRow(d){const r=document.createElement("div");r.className="mrow";r.in
 function addMsg(t,w){const d=document.createElement("div");d.className="msg "+w;d.textContent=t;if(!w.includes("typing"))setPreview(t);if(w.startsWith("bot"))return botRow(d);$("msgs").appendChild(d);$("msgs").scrollTop=1e6;return d}
 function addCard(cd){const d=document.createElement("div");d.className="msg bot bcard";d.innerHTML=`<div class="bc-h">${ic(cd.i||"info")}<b></b></div><ul></ul>${cd.b?`<div class="bc-b"></div>`:""}`;d.querySelector("b").textContent=tr(cd.h);
  tr(cd.l).forEach(x=>{const li=document.createElement("li");li.textContent=x;d.querySelector("ul").appendChild(li)});
- (cd.b||[]).forEach(b=>{const btn=document.createElement("button");btn.id=b.id;btn.className="bc-btn";btn.textContent=tr(b.l);btn.onclick=()=>clickTarget(b.id);d.querySelector(".bc-b").appendChild(btn)});botRow(d)}
+ (cd.b||[]).forEach((b,j)=>{const btn=document.createElement("button");btn.id=b.id;btn.className="bc-btn"+(cd.abc?" abc":"");if(cd.abc){btn.innerHTML=`<span class="abc-k" aria-hidden="true">${"ABCDEFG"[j]}</span><span class="lbl"></span>`;btn.lastChild.textContent=tr(b.l)}else btn.textContent=tr(b.l);btn.onclick=()=>clickTarget(b.id);d.querySelector(".bc-b").appendChild(btn)});botRow(d)}
 function botReply(st){addMsg(tr(st.reply),"bot");if(st.card)addCard(st.card);if(st.after)addMsg(tr(st.after),"bot")}
 function doSend(st,instant,cb){addMsg($("msg").value,"me");$("msg").value="";if(instant){botReply(st);return cb&&cb()}
-const ty=addMsg(u("thinking"),"bot typing");setTimeout(()=>{if(!ty.isConnected)return;ty.remove();botReply(st);cb&&cb()},700)}
+const ty=addMsg(u("thinking"),"bot typing");ty.innerHTML='<span class="tdots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr">'+esc(u("thinking"))+'</span>';setTimeout(()=>{if(!ty.isConnected)return;ty.remove();botReply(st);cb&&cb()},700)}
 function applyFx(st,instant,cb){if(st.fx=="send")return doSend(st,instant,cb);if(st.fx)FX[st.fx](st);cb&&cb()}
 function applyInstant(st){if(st.pre)FX[st.preFx](st);if(st.k=="type")st.f.forEach(f=>$(f.t).value=tr(f.v));applyFx(st,true)}
-function rebuild(n){resetDash();$("mkBot").classList.remove("chosen");for(let j=0;j<n;j++)applyInstant(LS.steps[j]);$("plusMenu").classList.add("hidden")}
+function rebuild(n){resetDash();for(let j=0;j<n;j++)applyInstant(LS.steps[j]);$("cmodal").classList.add("hidden")}
 const SPD=()=>+(localStorage.getItem("gbt_speed")||1); /* test hook only */
 const sleep=(ms,r)=>new Promise((res,rej)=>setTimeout(()=>r===L.run?res():rej("x"),ms*SPD()));
 function tapBanner(id,text){const old=$("tapBanner");if(old)old.remove();if(!id)return;const t=$(id),d=$("dash");const b=document.createElement("div");b.id="tapBanner";b.className="tapbanner";b.textContent=text;d.appendChild(b);
 const r=t.getBoundingClientRect(),dr=d.getBoundingClientRect();b.style.left=Math.max(8,Math.min(r.left-dr.left,dr.width-b.offsetWidth-8))+"px";const below=r.bottom-dr.top+12,up=below+b.offsetHeight>dr.height||t.classList.contains("bc-btn");b.style.top=(up?r.top-dr.top-b.offsetHeight-12:below)+"px";b.classList.toggle("up",up)}
 /* pacing: nothing auto-plays or auto-advances */
 const RM=matchMedia("(prefers-reduced-motion: reduce)").matches;
-const fields=()=>["bname","bdesc","msg"];
-const NAMES={newBot:T2("el botón «+»","the \"+\" button"),create:T2("«Crear bot»","\"Create bot\""),send:T2("la flecha de enviar","the send arrow"),bname:T2("«Nombre del bot»","\"Bot name\""),bdesc:T2("«Descripción»","\"Description\""),msg:T2("la caja de mensaje","the message box")};
-const nm=id=>id=="bot-new"?(lang=="es"?"«"+$(id).querySelector("b").textContent+"»":"\""+$(id).querySelector("b").textContent+"\""):id.startsWith("bot-")?(lang=="es"?"«"+bn(LS.bots[+id.slice(4)].n)+"»":"\""+bn(LS.bots[+id.slice(4)].n)+"\""):NAMES[id]?tr(NAMES[id]):(lang=="es"?"«"+$(id).textContent.trim()+"»":"\""+$(id).textContent.trim()+"\"");
-function setStatus(cls,icon,html){updStages();$("status").className="lstatus "+cls;$("status").innerHTML=`${ic(icon)}<span>${html}</span>`}
+const fields=()=>["bname","bdesc","msg","mname"];
+const NAMES={newBot:T2("el botón «+»","the \"+\" button"),create:T2("«Crear bot»","\"Create bot\""),send:T2("la flecha de enviar","the send arrow"),bname:T2("«Nombre del bot»","\"Bot name\""),bdesc:T2("«Descripción»","\"Description\""),msg:T2("la caja de mensaje","the message box"),mname:T2("la caja «Nombre de tu bot»","the \"Name your Bot\" box"),mcreate:T2("«Crear»","\"Create\"")};
+const nm=id=>id=="bot-new"?(lang=="es"?"«"+$(id).querySelector("b").textContent+"»":"\""+$(id).querySelector("b").textContent+"\""):id.startsWith("bot-")?(lang=="es"?"«"+bn(LS.bots[+id.slice(4)].n)+"»":"\""+bn(LS.bots[+id.slice(4)].n)+"\""):NAMES[id]?tr(NAMES[id]):(t=>lang=="es"?"«"+t+"»":"\""+t+"\"")(($(id).querySelector(".lbl")||$(id)).textContent.trim());
+/* context panel: where am I? Watch -> Your turn -> Done */
+function updCtx(){const el=$("ctx");if(!el)return;const ph=L.phase,cur=ph=="ok"?2:(ph=="turn"||ph=="busy")?1:0;
+ const key={arrive:"cxArrive",show:"cxShow",shown:"cxShown",turn:"cxTurn",busy:"cxBusy",ok:"cxOk"}[ph]||"cxArrive";
+ const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+ el.innerHTML=`<p class="cx-step">${u("stepWord")} ${L.i+1} ${u("of")} ${LS.steps.length}</p><ol class="cx-track">${[["play","cxWatch"],["hand","cxYou"],["check","cxDone"]].map(([i,t],n)=>{const st=n<cur||cur==2?"done":n==cur?"cur":"todo";return `<li class="${st}"${n==cur?' aria-current="step"':""}><span class="cx-ic">${st=="done"?CK:ic(i)}</span><b>${u(t)}</b></li>`}).join("")}</ol><p class="cx-now">${u(key)}</p>`}
+function setStatus(cls,icon,html){updStages();updCtx();$("status").className="lstatus "+cls;$("status").innerHTML=`${ic(icon)}<span>${html}</span>`}
 function act(html){$("act").innerHTML=html}
 function lockSim(mode){const d=$("dash");d.classList.toggle("done-dim",mode=="dim");d.classList.toggle("locked",!!mode);if(mode)d.setAttribute("aria-hidden","true");else d.removeAttribute("aria-hidden");
- d.querySelectorAll("button,input,textarea").forEach(e=>{e.disabled=mode=="dim";if(mode)e.tabIndex=-1;else e.removeAttribute("tabindex")})}
+ d.querySelectorAll("button,input,textarea").forEach(e=>{e.disabled=mode=="dim";if(mode)e.tabIndex=-1;else e.removeAttribute("tabindex")});if(!mode&&$("mcreate")&&$("mname"))$("mcreate").disabled=!$("mname").value.trim()}
 const glowBtn=(id,inner)=>`<span class="nextwrap"><button class="btn btn-pri hi" id="${id}">${inner}</button><span class="nextlabel" aria-hidden="true">${ic("arrowL")}${u("tapHere")}</span></span>`;
-const hideSD=()=>{const d=$("stepdone");if(d){d.classList.add("hidden");d.innerHTML=""}$("cursor").style.display="none";document.querySelectorAll(".lasttap").forEach(e=>e.classList.remove("lasttap"))};
+const hideSD=()=>{$("nextov")&&$("nextov").remove();const d=$("stepdone");if(d){d.classList.add("hidden");d.innerHTML=""}$("cursor").style.display="none";document.querySelectorAll(".lasttap").forEach(e=>e.classList.remove("lasttap"))};
 function arrive(){L.run++;hideSD();L.phase="arrive";rebuild(L.i);fields().forEach(x=>$(x).readOnly=true);$("typecard")&&$("typecard").classList.add("hidden");lockSim("dim");
  setStatus("watching","info",u("arriveMsg"));act(glowBtn("showBtn",`${ic("play")} ${u("showHow")}`));$("showBtn").onclick=show}
 let capAt=0;
@@ -174,17 +196,19 @@ async function show(){L.run++;const r=L.run,s=LS.steps[L.i];L.phase="show";hideS
  try{if(s.k=="click"){if(s.pre){await caption(u("capMove").replace("{x}",nm(s.pre)),r);$(s.pre).classList.add("hi");await clickAnim(s.pre,r);await caption(u("capTap").replace("{x}",nm(s.pre)),r);clearHi();FX[s.preFx](s)}await caption(u("capMove").replace("{x}",nm(s.t)),r);$(s.t).classList.add("hi");await clickAnim(s.t,r);await caption(u("capTap").replace("{x}",nm(s.t)),r);applyFx(s,true);if(s.fx=="say")await caption(u("capReply"),r)}
   else{if(s.pre){await caption(u("capMove").replace("{x}",nm(s.pre)),r);$(s.pre).classList.add("hi");await clickAnim(s.pre,r);await caption(u("capTap").replace("{x}",nm(s.pre)),r);clearHi();FX[s.preFx](s)}
    for(const f of s.f){const el=$(f.t),txt=tr(f.v);await caption(u("capType").replace("{x}",nm(f.t)),r);el.classList.add("hi");await moveTo(f.t,r);
-    if(RM)el.value=txt;else for(let k=0;k<txt.length;k++){el.value=txt.slice(0,k+1);el.scrollTop=1e6;await sleep(40,r)}el.classList.remove("hi")}
+    if(RM){el.value=txt;el.dispatchEvent(new Event("input"))}else for(let k=0;k<txt.length;k++){el.value=txt.slice(0,k+1);el.dispatchEvent(new Event("input"));el.scrollTop=1e6;await sleep(40,r)}el.classList.remove("hi")}
    await caption(u("capThen").replace("{x}",nm(s.go)),r);$(s.go).classList.add("hi");await clickAnim(s.go,r);
    if(s.fx=="send"){await new Promise(res=>doSend(s,false,res));await caption(u("capReply"),r)}else{applyFx(s,true);await caption(u("capDone"),r)}}
   L.lastFrame=simSnap();L.lastY=scrollY;await holdCaption(r);document.querySelectorAll("#dash .hi").forEach(e=>{e.classList.remove("hi");e.classList.add("lasttap")});shown()}catch(e){}}
 /* test hook: structural snapshot of the simulator (ignores highlight/disabled state) */
 function simSnap(){return [...document.querySelectorAll("#dash *")].filter(e=>!e.closest("#tapBanner")&&e.id!="cursor"&&!e.closest("#cursor")).map(e=>{const r=e.getClientRects().length>0;return e.tagName+"#"+e.id+"."+[...e.classList].filter(c=>!["hi","lasttap","click"].includes(c)).join(".")+"|"+(r?1:0)+"|"+(e.children.length?"":(e.value||e.textContent||"").slice(0,60))}).join("\n")}
 function shown(){L.phase="shown";setStatus("watching","check",u("shownTop"));act("");lockSim("dim");
- const sd=$("stepdone");sd.innerHTML=`<div class="sd-msg">${avSVG("","sd-av","att")}<p>${u("shownMsg")}</p></div><div class="sd-act">${glowBtn("gotIt",`${u("gotIt")} ${ic("arrowR")}`)}<button class="btn-link small muted" id="again">${ic("redo")} ${u("seeAgain")}</button></div>`;sd.classList.remove("hidden");
- $("gotIt").onclick=turn;$("again").onclick=show;$("gotIt").focus({preventScroll:true});calmScroll(sd,1500)}
+ /* "Got it, my turn" floats at the top of the dimmed simulator, like "Next step" */
+ const ov=document.createElement("div");ov.className="nextov";ov.id="nextov";ov.innerHTML=`<p class="nextov-t"><b>${u("cxShown")}</b></p>${glowBtn("gotIt",`${u("gotIt")} ${ic("arrowR")}`)}<button class="btn-link small muted" id="again">${ic("redo")} ${u("seeAgain")}</button>`;$("dash").parentNode.appendChild(ov);
+ $("gotIt").onclick=turn;$("again").onclick=show;$("gotIt").focus({preventScroll:true});
+ const d=$("dash").getBoundingClientRect();if(d.top<0||d.bottom>innerHeight)window.scrollTo({top:scrollY+d.top-Math.max(8,(innerHeight-d.height)/2),behavior:SMOOTH()})}
 function turn(){L.run++;hideSD();L.phase="turn";const s=LS.steps[L.i];rebuild(L.i);lockSim(false);fields().forEach(x=>$(x).readOnly=false);L.pre=!!s.pre;$("typecard")&&$("typecard").classList.toggle("hidden",L.pre);
- const msg=s.k=="click"||L.pre?(L.pre?(s.pre=="newBot"?u("turnPre"):u("turnPreBot").replace("{x}",nm(s.pre))):u("turnClick1")):s.go=="create"?u("turnForm"):u("turnType1");
+ const msg=s.k=="click"||L.pre?(L.pre?(s.pre=="newBot"?u("turnPre"):u("turnPreBot").replace("{x}",nm(s.pre))):u("turnClick1")):s.go=="mcreate"?u("turnModal"):s.go=="create"?u("turnForm"):u("turnType1");
  setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${msg}`);act(`<button class="btn-link small" id="again">${ic("redo")} ${u("seeAgain")}</button>`);$("again").onclick=show;
  updGlow();if(s.k=="type"){s.f.forEach(f=>$(f.t).oninput=()=>{clearTimeout(L.gt);L.gt=setTimeout(updGlow,650)})}
  fit();const first=document.querySelector(".hi");if(s.k=="type"&&first)first.focus({preventScroll:true})}
@@ -196,7 +220,7 @@ function updGlow(){if(L.phase!="turn")return;const s=LS.steps[L.i];clearHi();
  const empty=s.f.filter(f=>!$(f.t).value.trim());if(empty.length){empty.forEach(f=>$(f.t).classList.add("hi"));tapBanner(empty[0].t,u("typeHere"))}
  else{$("fb").textContent="";$(s.go).classList.add("hi");tapBanner(s.go,s.go=="send"?u("tapSend"):u("tapCreate"));const b=$(s.go).getBoundingClientRect();if(b.bottom>innerHeight)$(s.go).scrollIntoView({block:"nearest"})}}
 function fb(t,ok){$("fb").className="fb "+(ok?"good":"bad");$("fb").textContent=t}
-function fillEx(){if(L.phase!="turn")return;const s=LS.steps[L.i];s.f.forEach(f=>$(f.t).value=tr(f.v));clearTimeout(L.gt);updGlow();$(s.go).focus({preventScroll:true})}
+function fillEx(){if(L.phase!="turn")return;const s=LS.steps[L.i];s.f.forEach(f=>{$(f.t).value=tr(f.v);$(f.t).dispatchEvent(new Event("input"))});clearTimeout(L.gt);updGlow();$(s.go).focus({preventScroll:true})}
 const SMOOTH=()=>RM?"auto":"smooth";
 /* calm scroll: only after a pause, slow, and only if needed */
 function calmScroll(el,delay){clearTimeout(L.sc);const r=L.run;L.sc=setTimeout(()=>{if(r!==L.run||!el.isConnected)return;const b=el.getBoundingClientRect();if(b.top>=0&&b.bottom<=innerHeight)return;
@@ -210,17 +234,24 @@ function success(){L.phase="ok";clearHi();$("typecard")&&$("typecard").classList
  lockSim("dim");
  ["dunno","simple"].forEach(k=>$(k)&&$(k).classList.add("hidden"));$("fill")&&($("fill").disabled=true);
  /* feedback + the single next button sit right under the simulator, where the student is looking */
- const sd=$("stepdone");sd.innerHTML=`<div class="sd-msg">${avSVG("","sd-av react","happy")}<p><b>${u("bravo")}</b> ${u("okMsgX").replace("{b}",esc(q))}</p></div><div class="sd-act">${glowBtn("nextBtn",`${esc(label)} ${ic("arrowR")}`)}</div>`;sd.classList.remove("hidden");
+ /* next button lives in the step card, right under "Paso terminado", visible without scrolling */
+ /* next button floats centered over the dimmed simulator */
+ const ov=document.createElement("div");ov.className="nextov";ov.id="nextov";ov.innerHTML=`<p class="nextov-t"><b>${u("bravo")}</b></p>${glowBtn("nextBtn",`${esc(label)} ${ic("arrowR")}`)}`;$("dash").parentNode.appendChild(ov);
  $("nextBtn").onclick=()=>{go(L.i+1);$("main").scrollIntoView({block:"start",behavior:SMOOTH()})};$("nextBtn").focus({preventScroll:true});
- calmScroll(sd,1500)}
+ const d=$("dash").getBoundingClientRect();if(d.top<0||d.bottom>innerHeight)window.scrollTo({top:scrollY+d.top-Math.max(8,(innerHeight-d.height)/2),behavior:SMOOTH()})}
 function clickTarget(id){if(L.phase!="turn")return;const s=LS.steps[L.i];
- if(L.pre){if(id!==s.pre)return fb(u("wrong"));L.pre=false;FX[s.preFx](s);$("fb").textContent="";if(s.k=="click"){setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${u("turnClick1")}`);return updGlow()}$("typecard").classList.remove("hidden");setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${s.go=="create"?u("turnForm"):u("turnType1")}`);updGlow();fit();const f0=document.querySelector(".hi");f0&&f0.focus({preventScroll:true});return}
+ if(L.pre){if(id!==s.pre)return fb(u("wrong"));L.pre=false;FX[s.preFx](s);$("fb").textContent="";if(s.k=="click"){setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${u("turnClick1")}`);return updGlow()}$("typecard").classList.remove("hidden");setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${s.go=="mcreate"?u("turnModal"):s.go=="create"?u("turnForm"):u("turnType1")}`);updGlow();fit();const f0=document.querySelector(".hi");f0&&f0.focus({preventScroll:true});return}
  if(s.k=="click"){if(id!==s.t)return fb(u("wrong"));applyFx(s,true);return success()}
  if(id!==s.go)return fb(u("wrong"));if(s.f.some(f=>!$(f.t).value.trim())){updGlow();return fb(u("empty"))}
  clearTimeout(L.gt);L.phase="busy";clearHi();tapBanner(null);if(s.fx=="send")doSend(s,false,success);else{applyFx(s,true);success()}}
 function bindBots(){document.querySelectorAll(".botbtn").forEach(b=>b.onclick=()=>clickTarget(b.id))}
-function bindSim(){["newBot","mkBot","create","send"].forEach(id=>$(id).onclick=()=>clickTarget(id));
+function bindSim(){["newBot","create","send","mcreate"].forEach(id=>$(id).onclick=()=>clickTarget(id));
+ document.querySelectorAll(".cm-face").forEach(b=>b.onclick=()=>{M.face=+b.dataset.f;paintModal()});document.querySelectorAll(".cm-col").forEach(b=>b.onclick=()=>{M.col=b.dataset.c;paintModal()});
+ $("mname").addEventListener("input",paintModal);$("mname").addEventListener("keydown",e=>{if(e.key=="Enter"){e.preventDefault();if($("mname").value.trim())clickTarget("mcreate")}});
+ const cancel=()=>{if(L.phase!="turn")return;$("cmodal").classList.add("hidden");const s=LS.steps[L.i];if(s.pre=="newBot"){L.pre=true;$("typecard")&&$("typecard").classList.add("hidden");setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${u("turnPre")}`);updGlow()}};$("mcancel").onclick=cancel;$("mclose").onclick=cancel;
  ["bname","bdesc"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key=="Enter"){e.preventDefault();updGlow()}}));
+ $("msg").addEventListener("keydown",e=>{if(e.key=="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!$("msg").readOnly)clickTarget("send")}});
+ const sv=()=>$("send").classList.toggle("ready",!!$("msg").value.trim());$("msg").addEventListener("input",sv);
  fields().forEach(id=>$(id).addEventListener("focus",()=>{if(L.phase=="turn"&&LS.steps[L.i].k=="click")fb(u("wrong"))}))}
 /* real */
 function renderReal(){const id=MODS[MI].id,ck=store.get("gbt2_checks_"+id,[]),j=store.get("gbt2_journal_"+id,{});
