@@ -181,6 +181,9 @@ function setStatus(cls,icon,html){updStages();updCtx();$("status").className="ls
 function act(html){$("act").innerHTML=html}
 function lockSim(mode){const d=$("dash");d.classList.toggle("done-dim",mode=="dim");d.classList.toggle("locked",!!mode);if(mode)d.setAttribute("aria-hidden","true");else d.removeAttribute("aria-hidden");
  d.querySelectorAll("button,input,textarea").forEach(e=>{e.disabled=mode=="dim";if(mode)e.tabIndex=-1;else e.removeAttribute("tabindex")});if(!mode&&$("mcreate")&&$("mname"))$("mcreate").disabled=!$("mname").value.trim()}
+const ovH=()=>{const o=$("nextov");if(!o||!matchMedia("(max-width:820px)").matches)return 0;return o.getBoundingClientRect().bottom+12};
+function watchOv(){const o=$("nextov");if(!o||o._ro)return;let h=o.offsetHeight;document.body.style.setProperty("--nextov-h",h+"px");if(window.ResizeObserver){o._ro=new ResizeObserver(()=>{if(!o.isConnected){o._ro.disconnect();return}const n=o.offsetHeight;if(n===h)return;h=n;document.body.style.setProperty("--nextov-h",h+"px");fitDash()});o._ro.observe(o)}}
+function fitDash(){watchOv();const d=$("dash").getBoundingClientRect(),top=ovH();if(top){const c=($("ctx")||$("dash")).getBoundingClientRect();window.scrollTo({top:Math.max(0,scrollY+Math.min(c.top,d.top)-top),behavior:SMOOTH()});return}if(d.top<0||d.bottom>innerHeight)window.scrollTo({top:scrollY+d.top-Math.max(8,(innerHeight-d.height)/2),behavior:SMOOTH()})}
 const glowBtn=(id,inner)=>`<span class="nextwrap"><button class="btn btn-pri hi" id="${id}">${inner}</button><span class="nextlabel" aria-hidden="true">${ic("arrowL")}${u("tapHere")}</span></span>`;
 const hideSD=()=>{$("nextov")&&$("nextov").remove();const d=$("stepdone");if(d){d.classList.add("hidden");d.innerHTML=""}$("cursor").style.display="none";document.querySelectorAll(".lasttap").forEach(e=>e.classList.remove("lasttap"))};
 function arrive(){L.run++;hideSD();L.phase="arrive";rebuild(L.i);fields().forEach(x=>$(x).readOnly=true);$("typecard")&&$("typecard").classList.add("hidden");lockSim("dim");
@@ -206,7 +209,7 @@ function shown(){L.phase="shown";setStatus("watching","check",u("shownTop"));act
  /* "Got it, my turn" floats at the top of the dimmed simulator, like "Next step" */
  const ov=document.createElement("div");ov.className="nextov";ov.id="nextov";ov.innerHTML=`<p class="nextov-t"><b>${u("cxShown")}</b></p>${glowBtn("gotIt",`${u("gotIt")} ${ic("arrowR")}`)}<button class="btn-link small muted" id="again">${ic("redo")} ${u("seeAgain")}</button>`;$("dash").parentNode.appendChild(ov);
  $("gotIt").onclick=turn;$("again").onclick=show;$("gotIt").focus({preventScroll:true});
- const d=$("dash").getBoundingClientRect();if(d.top<0||d.bottom>innerHeight)window.scrollTo({top:scrollY+d.top-Math.max(8,(innerHeight-d.height)/2),behavior:SMOOTH()})}
+ fitDash()}
 function turn(){L.run++;hideSD();L.phase="turn";const s=LS.steps[L.i];rebuild(L.i);lockSim(false);fields().forEach(x=>$(x).readOnly=false);L.pre=!!s.pre;$("typecard")&&$("typecard").classList.toggle("hidden",L.pre);
  const msg=s.k=="click"||L.pre?(L.pre?(s.pre=="newBot"?u("turnPre"):u("turnPreBot").replace("{x}",nm(s.pre))):u("turnClick1")):s.go=="mcreate"?u("turnModal"):s.go=="create"?u("turnForm"):u("turnType1");
  setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${msg}`);act(`<button class="btn-link small" id="again">${ic("redo")} ${u("seeAgain")}</button>`);$("again").onclick=show;
@@ -238,7 +241,7 @@ function success(){L.phase="ok";clearHi();$("typecard")&&$("typecard").classList
  /* next button floats centered over the dimmed simulator */
  const ov=document.createElement("div");ov.className="nextov";ov.id="nextov";ov.innerHTML=`<p class="nextov-t"><b>${u("bravo")}</b></p>${glowBtn("nextBtn",`${esc(label)} ${ic("arrowR")}`)}`;$("dash").parentNode.appendChild(ov);
  $("nextBtn").onclick=()=>{go(L.i+1);$("main").scrollIntoView({block:"start",behavior:SMOOTH()})};$("nextBtn").focus({preventScroll:true});
- const d=$("dash").getBoundingClientRect();if(d.top<0||d.bottom>innerHeight)window.scrollTo({top:scrollY+d.top-Math.max(8,(innerHeight-d.height)/2),behavior:SMOOTH()})}
+ fitDash()}
 function clickTarget(id){if(L.phase!="turn")return;const s=LS.steps[L.i];
  if(L.pre){if(id!==s.pre)return fb(u("wrong"));L.pre=false;FX[s.preFx](s);$("fb").textContent="";if(s.k=="click"){setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${u("turnClick1")}`);return updGlow()}$("typecard").classList.remove("hidden");setStatus("turn","hand",`<b>${u("yourTurn")}:</b> ${s.go=="mcreate"?u("turnModal"):s.go=="create"?u("turnForm"):u("turnType1")}`);updGlow();fit();const f0=document.querySelector(".hi");f0&&f0.focus({preventScroll:true});return}
  if(s.k=="click"){if(id!==s.t)return fb(u("wrong"));applyFx(s,true);return success()}
