@@ -532,3 +532,6 @@ body:has(.cmodal:not(.hidden)) .consent .cd{display:none}
 .nextov .btn{padding:0 14px}
 .nextov .btn svg{display:none}
 }
+.vdsq .vdbox{aspect-ratio:1/1}
+.vdgrid:has(> .vdsq:only-child){grid-template-columns:1fr}
+.vdsq{max-width:440px;width:100%;justify-self:center}
